@@ -30,9 +30,42 @@ class UserListPage extends Component {
       }
       })
       .then((response) => response.json())
-      .then((responseData) => {            
-              this.setState({memberList: responseData});
-              console.log(responseData);
+      .then((responseData) => {  
+              
+              responseData = responseData.map((user)=>{
+                return {
+                  key: "1",
+                  item: [
+                    {
+                      content: (
+                        <Text RootComponent="span" muted>
+                          {user.ID}
+                        </Text>
+                      ),
+                    },
+                    {
+                      content: (
+                        <a href="invoice.html" className="text-inherit">
+                          {user.NAME}
+                        </a>
+                      ),
+                    },
+                    { content: user.TEL },
+                    { content: user.CITY},
+                    { content: user.POINT },
+                    {
+                      content: (
+                        <React.Fragment>
+                          <span className="status-icon bg-success" /> {user.STATUS === '1' ? '활동' :'비활동'}
+                        </React.Fragment>
+                      ),
+                    },
+                    { content: user.TYPE === '1' ? '대리' :'정회원' },                        
+                    { content: <Icon link name="edit" /> },
+                  ],
+                } 
+              });
+              this.setState({memberList: responseData});        
         
       })
       .catch((error)=>{
@@ -68,39 +101,7 @@ class UserListPage extends Component {
                       { content: "직급" },
                       { content: null },
                     ]}
-                    bodyItems={[
-                      {
-                        key: "1",
-                        item: [
-                          {
-                            content: (
-                              <Text RootComponent="span" muted>
-                                001401
-                              </Text>
-                            ),
-                          },
-                          {
-                            content: (
-                              <a href="invoice.html" className="text-inherit">
-                                Design Works
-                              </a>
-                            ),
-                          },
-                          { content: "Carlson Limited" },
-                          { content: "87956621" },
-                          { content: "15 Dec 2017" },
-                          {
-                            content: (
-                              <React.Fragment>
-                                <span className="status-icon bg-success" /> Paid
-                              </React.Fragment>
-                            ),
-                          },
-                          { content: "$887" },                        
-                          { content: <Icon link name="edit" /> },
-                        ],
-                      },
-                    ]}
+                    bodyItems={memberList}
                   />
                 </Card>
               </Grid.Col>
