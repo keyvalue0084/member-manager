@@ -17,6 +17,7 @@ function App(props: Props): React.Node {
           <Route exact path="/userlist" component={UserListPage} />         
           <Route exact path="/profile" component={ProfilePage} />
           <Route exact path="/userregist" component={UserRegistPage} />
+          <Route exact path="/login" component={LoginPage} />
         </Switch>
       </Router>
     </React.StrictMode>

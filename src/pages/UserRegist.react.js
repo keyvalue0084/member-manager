@@ -1,7 +1,7 @@
 // @flow
 
 import React from "react";
-import { Formik,Form as FormikForm,Field,ErrorMessage  } from "formik";
+import { Formik,Form as FormikForm } from "formik";
 import {
   Container,
   Grid,
@@ -16,23 +16,15 @@ import SiteWrapper from "../SiteWrapper.react";
 const UserRegistPage = () => (
     <div>      
         <Formik initialValues={{ name:'' ,email: '' }}     
-                validate={values => {
-                    let errors = {};
-                    if (!values.name) {
-                      errors.name = "Required";
-                    } else if (
-                      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)
-                    ) {
-                      errors.email = "Invalid email address";
-                    }
-                    return errors;
-                }}
-                onSubmit={(values) => {
+               
+                onSubmit={(values, { setSubmitting }) => {
+                setSubmitting(true);
                 alert(JSON.stringify(values));
-                document.location='/userlist'
+                setSubmitting(false);
+                //document.location='/userlist'
             }}
         >        
-        {({ isSubmitting }) => (
+        {({ isSubmitting, values,handleChange }) => (
           <FormikForm>
             <SiteWrapper>
                 <div className="my-3 my-md-5">
@@ -48,9 +40,10 @@ const UserRegistPage = () => (
                                         <Form.Label>이름</Form.Label>
                                         <Form.Input
                                         type="text"                          
-                                        placeholder="이름"
-                                        value=""
+                                        placeholder="이름"                                        
                                         name="name"
+                                        value={values.name}
+                                        onChange={handleChange}
                                         />
                                     </Form.Group>
                                     </Grid.Col>
@@ -59,8 +52,7 @@ const UserRegistPage = () => (
                                         <Form.Label>전화번호</Form.Label>
                                         <Form.Input
                                         type="text"
-                                        placeholder="000-0000-0000"
-                                        value=""
+                                        placeholder="000-0000-0000"                                        
                                         name="phone"
                                         />
                                     </Form.Group>
@@ -68,7 +60,7 @@ const UserRegistPage = () => (
                                     <Grid.Col sm={6} md={4}>
                                     <Form.Group>
                                         <Form.Label>이메일</Form.Label>
-                                        <Form.Input type="email" placeholder="Email" name="email"/>
+                                        <Form.Input type="email" placeholder="Email" name="email" />
                                     </Form.Group>
                                     </Grid.Col>
                                     <Grid.Col sm={6} md={2}>
