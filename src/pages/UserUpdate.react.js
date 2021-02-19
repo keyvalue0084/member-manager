@@ -10,35 +10,54 @@ import {
   Button,
   Form
 } from "tabler-react";
-
+import queryString from 'query-string';
 import SiteWrapper from "../SiteWrapper.react";
 
 
-class UserRegistPage extends Component{
+class UserUpdatePage extends Component{
     constructor(){
         super(...arguments);
         this.state = {            
             memberInfo:{}
         };
-      }   
+      }
+      componentDidMount(){
+        fetch('/api/member/getMember'+this.props.location.search,{
+          method: 'get',
+          dataType: 'json',
+          headers:{
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+        })
+        .then((response) => response.json())
+        .then((responseData) => {  
+            let targetId =  queryString.parse(this.props.location.search).id;
+            let member = {};            
+            member = responseData.find((m) => m.id == targetId);              
+            this.setState({memberInfo: member});
+        })
+        .catch((error)=>{
+          console.log('Error fetching',error);
+        });
+      }  
       render(){          
           return (
             <div>      
                 <Formik 
-                enableReinitialize
-                initialValues={{ name: this.state.memberInfo.NAME, email: '', tel:'',city:'',address:'',point:'',type:'',status:'',note:''}}
-                onSubmit={(values) => {                    
-                            fetch('/api/member/insertMember?name='+values.name+'&email='+values.email+'&tel='+values.tel+'&city='+values.city+'&address='+values.address+'&point='+values.point+'&type='+values.type+'&status='+values.status+'&note='+values.note,{
-                                method: 'get',
-                                dataType: 'json',
-                                headers:{
-                                    'Accept': 'application/json',
-                                    'Content-Type': 'application/json'
-                                }                       
-                            }).then(response => {
-                                console.log("insertMember: "+response);
-                            })
-                        document.location='/userlist'
+                    enableReinitialize
+                    initialValues={this.state.memberInfo}
+                    onSubmit={(values) => {      
+                        fetch('/api/member/updateMember?id='+values.id+'&name='+values.name+'&email='+values.email+'&tel='+values.tel+'&city='+values.city+'&address='+values.address+'&point='+values.point+'&type='+values.type+'&status='+values.status+'&note='+values.note,{
+                            method: 'get',
+                            dataType: 'json',
+                            headers:{
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            }                       
+                        }).then(response => {                      
+                            document.location='/userlist'
+                        })
                     }}
                     render= {({ isSubmitting, values, handleChange }) => (
                         <FormikForm>
@@ -59,6 +78,12 @@ class UserRegistPage extends Component{
                                                         placeholder="이름"                                        
                                                         name="name"
                                                         value={values.name}
+                                                        onChange={handleChange}
+                                                    />
+                                                     <Form.Input
+                                                        type="hidden"                                                                                  
+                                                        name="id"
+                                                        value={values.id}
                                                         onChange={handleChange}
                                                     />
                                                 </Form.Group>
@@ -111,21 +136,17 @@ class UserRegistPage extends Component{
                                                 <Grid.Col md={6}>                        
                                                 <Form.Group>
                                                     <Form.Label>구분</Form.Label>
-                                                    <Form.SwitchStack>                                                
-                                                        <Form.Switch
-                                                            type="radio"
-                                                            name="type"
-                                                            value="E"
-                                                            label="운영진"
-                                                            onChange={handleChange}
-                                                        />
-                                                        <Form.Switch
-                                                            type="radio"
-                                                            name="type"
-                                                            value="M"
-                                                            label="정회원"     
-                                                            onChange={handleChange}                                         
-                                                        />   
+                                                    <Form.SwitchStack> 
+                                                        {
+                                                            values.type === 'E'
+                                                            ? <Form.Switch type="radio" name="type" value="E" label="운영진" onChange={handleChange} checked />  
+                                                            : <Form.Switch type="radio" name="type" value="E" label="운영진" onChange={handleChange} />  
+                                                        }
+                                                        {
+                                                            values.type === 'M'
+                                                            ? <Form.Switch type="radio" name="type" value="M" label="정회원" onChange={handleChange} checked />  
+                                                            : <Form.Switch type="radio" name="type" value="M" label="정회원" onChange={handleChange} />  
+                                                        }
                                                         
                                                     </Form.SwitchStack>      
                                                 </Form.Group>
@@ -133,22 +154,17 @@ class UserRegistPage extends Component{
                                                 <Grid.Col sm={6} md={6}>
                                                 <Form.Group>
                                                     <Form.Label>상태</Form.Label>
-                                                    <Form.SwitchStack>                                                
-                                                        <Form.Switch
-                                                            type="radio"
-                                                            name="status"
-                                                            value="ACTIVE"
-                                                            label="활동중"
-                                                            onChange={handleChange}
-                                                        />
-                                                        <Form.Switch
-                                                            type="radio"
-                                                            name="status"
-                                                            value="INACTIVE"
-                                                            label="탈퇴"     
-                                                            onChange={handleChange}                                         
-                                                        />   
-                                                        
+                                                    <Form.SwitchStack>                                                                                                        
+                                                        {
+                                                            values.status === 'ACTIVE'
+                                                            ? <Form.Switch type="radio" name="status" value="ACTIVE" label="활동중" onChange={handleChange} checked />  
+                                                            : <Form.Switch type="radio" name="status" value="ACTIVE" label="활동중" onChange={handleChange} />  
+                                                        }
+                                                        {
+                                                            values.status === 'INACTIVE'
+                                                            ? <Form.Switch type="radio" name="status" value="INACTIVE" label="탈퇴" onChange={handleChange} checked />  
+                                                            : <Form.Switch type="radio" name="status" value="INACTIVE" label="탈퇴" onChange={handleChange} />  
+                                                        }
                                                     </Form.SwitchStack>      
                                                 </Form.Group>
                                                 </Grid.Col>                    
@@ -187,4 +203,4 @@ class UserRegistPage extends Component{
       }
 }
 
-export default UserRegistPage;
+export default UserUpdatePage;

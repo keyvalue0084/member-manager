@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import {ProfilePage,UserListPage,LoginPage, UserRegistPage} from "./pages";
+import {ProfilePage,UserListPage,LoginPage, UserRegistPage, UserUpdatePage} from "./pages";
 import HomePage from "./HomePage.react";
 
 
@@ -17,6 +17,7 @@ function App(props: Props): React.Node {
           <Route exact path="/userlist" component={UserListPage} />         
           <Route exact path="/profile" component={ProfilePage} />
           <Route exact path="/userregist" component={UserRegistPage} />
+          <Route exact path="/userupdate" component={UserUpdatePage} />
           <Route exact path="/login" component={LoginPage} />
         </Switch>
       </Router>

@@ -13,6 +13,7 @@ import {
 
 import SiteWrapper from "../SiteWrapper.react";
 
+
 class UserListPage extends Component {
     constructor(){
       super(...arguments);
@@ -20,8 +21,12 @@ class UserListPage extends Component {
         memberList:[]
       };
     }
-    componentDidMount(){
-      fetch('http://localhost:4000/api/getMemberList',{
+    userEdit=(id)=>{      
+      document.location="/userupdate?id="+id
+    }
+    userDelete=(id)=>{
+      
+      fetch('/api/member/deleteMember?id='+id,{
         method: 'get',
         dataType: 'json',
         headers:{
@@ -30,38 +35,50 @@ class UserListPage extends Component {
       }
       })
       .then((response) => response.json())
-      .then((responseData) => {  
-              
+      .then((responseData) => {                            
+          if(window.confirm("정말 삭제하시겠습니까?")){
+            let newMemberList = this.state.memberList.filter(member => member.key != id );              
+            this.setState({memberList: newMemberList});        
+          }
+      })
+      .catch((error)=>{
+        console.log('Error fetching man',error);
+      });
+    }
+    componentDidMount(){
+      fetch('/api/member/getMemberList',{
+        method: 'get',
+        dataType: 'json',
+        headers:{
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+      })
+      .then((response) => response.json())
+      .then((responseData) => {                
               responseData = responseData.map((user)=>{
                 return {
-                  key: "1",
-                  item: [
+                  key: user.id,
+                  item: [                    
                     {
                       content: (
-                        <Text RootComponent="span" muted>
-                          {user.ID}
-                        </Text>
-                      ),
-                    },
-                    {
-                      content: (
-                        <a href="invoice.html" className="text-inherit">
-                          {user.NAME}
+                        <a href="/#" className="text-inherit">
+                          {user.name}
                         </a>
                       ),
                     },
-                    { content: user.TEL },
-                    { content: user.CITY},
-                    { content: user.POINT },
+                    { content: user.tel },
+                    { content: user.city},                    
+                    { content: user.point },
                     {
                       content: (
                         <React.Fragment>
-                          <span className="status-icon bg-success" /> {user.STATUS === '1' ? '활동' :'비활동'}
+                           {user.status === 'ACTIVE' ? <div><span className="status-icon bg-success" />활동</div> :<div><span className="status-icon bg-red" />비활동</div> }
                         </React.Fragment>
                       ),
                     },
-                    { content: user.TYPE === '1' ? '대리' :'정회원' },                        
-                    { content: <Icon link name="edit" /> },
+                    { content: user.type === 'E' ? '운영진' :'정회원' },                        
+                    { content: <div><Icon link name="edit" onClick={() => this.userEdit(user.id)}/> <Icon link name="trash" onClick={() => this.userDelete(user.id)}/></div> },
                   ],
                 } 
               });
@@ -91,8 +108,7 @@ class UserListPage extends Component {
                   <Table
                     responsive
                     className="card-table table-vcenter text-nowrap"
-                    headerItems={[
-                      { content: "번호.", className: "w-1" },
+                    headerItems={[                      
                       { content: "이름" },
                       { content: "전화번호" },
                       { content: "지역" },
